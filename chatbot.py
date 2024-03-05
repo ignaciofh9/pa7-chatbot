@@ -9,8 +9,6 @@ from pydantic import BaseModel, Field
 
 import numpy as np
 
-# easter egg
-
 
 # noinspection PyMethodMayBeStatic
 class Chatbot:
