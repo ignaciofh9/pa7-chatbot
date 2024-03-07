@@ -13,6 +13,8 @@ import cmd
 import logging
 import sys
 
+import numpy as np
+
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
@@ -65,6 +67,28 @@ class REPL(cmd.Cmd):
                      self.greeting
         self.debug = False
         self.debug_chatbot = False
+
+        print(self.chatbot.extract_titles('I liked "The Notebook".'))
+        print(self.chatbot.extract_titles('You are a great bot!'))
+        print(self.chatbot.extract_titles('I enjoyed "Titanic (1997)" and "Scream 2 (1997)"'))
+
+        print(self.chatbot.find_movies_by_title('An American in Paris (1951)'))
+        print(self.chatbot.find_movies_by_title('The Notebook (1220)'))
+        print(self.chatbot.find_movies_by_title('Titanic'))
+        print(self.chatbot.find_movies_by_title('Scream'))
+
+        print(self.chatbot.extract_sentiment("""I didn't really like "Titanic (1997)"."""))
+        print(self.chatbot.extract_sentiment('I never liked "Titanic (1997)".'))
+        print(self.chatbot.extract_sentiment('I really enjoyed "Titanic (1997)"'))
+        print(self.chatbot.extract_sentiment('I saw "Titanic (1997)".'))
+        print(self.chatbot.extract_sentiment('"Titanic (1997)" started out terrible, but the ending was totally great and I loved it!'))
+        print(self.chatbot.extract_sentiment('I loved "10 Things I Hate About You"'))
+
+        user_ratings = np.zeros(9125)
+        user_ratings[[8514, 7953, 6979, 7890]] = 1
+        user_ratings[[7369, 8726]] = -1
+
+        print(self.chatbot.recommend(user_ratings=user_ratings, ratings_matrix=self.chatbot.ratings, k=5))
 
         self.llm_prompting = llm_prompting
         self.llm_history = [{
