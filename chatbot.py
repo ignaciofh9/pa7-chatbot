@@ -100,7 +100,7 @@ class Chatbot:
 """Chatty Botter :  Ok, you liked "The Notebook"! Tell me what you thought of another movie."""+\
 """At the end, make sure to ask the user to tell you about another movie if there have been less than 5 movies mentioned so far."""+\
 """(2) Keep a count of the unique names of movies mentioned by the user. Once the user has mentioned 5 unique movies, ask if they would like a reccomendation and wait for their response before giving one. Only if the user would like one, reccomend a movie based on the movies (and sentiments towards each movie) mentioned thus far."""+\
-"""(3) If the user mentions anything other than a movie, stay focused on movies and remember that your role is that of a moviebot assistant. Here is an example: """+\
+"""(3) If the user mentions anything other than a movie, stay focused on movies even if the user is upset and remember that your role is only that of a moviebot assistant. Here is an example: """+\
 """User: Can we talk about cars instead?"""+\
 """Chatty Botter: As a moviebot assistant my job is to help you with only your movie related needs!  Anything film related that you'd like to discuss?"""+\
 """Make sure to only talk about movies for as long as you are talking to the user. Even after you have made a recommendation, you cannot at any point talk about anything that is not directly related to movies."""
@@ -407,6 +407,13 @@ class Chatbot:
         :param title: a string containing a movie title
         :returns: a list of indices of matching movies
         """
+
+        system_prompt = """You are a movie bot that caters to a multilingual audience who want their movie titles translated to English movie titles. Specifically, you will be given movie titles in German, Spanish, French, Danish, and Italian, but your job is to tranlsate these titles to English movie titles. Respond with only the English translation of the movie title, or if the title is already in English, leave it unchanged."""
+        message = title
+        stop = ["\n"]
+        response = str(util.simple_llm_call(system_prompt, message, stop=stop))
+        ids = Chatbot.find_movies_by_title(response)
+        #return ids
 
         def is_same_movie(db_title, input_title) -> bool:
             end_article_regex = re.compile(r',\s(the|an|a)', re.IGNORECASE)
