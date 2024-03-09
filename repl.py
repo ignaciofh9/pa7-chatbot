@@ -84,11 +84,11 @@ class REPL(cmd.Cmd):
         # print(self.chatbot.extract_sentiment('"Titanic (1997)" started out terrible, but the ending was totally great and I loved it!'))
         # print(self.chatbot.extract_sentiment('I loved "10 Things I Hate About You"'))
 
-        user_ratings = np.zeros(9125)
-        user_ratings[[8514, 7953, 6979, 7890]] = 1
-        user_ratings[[7369, 8726]] = -1
+        # user_ratings = np.zeros(9125)
+        # user_ratings[[8514, 7953, 6979, 7890]] = 1
+        # user_ratings[[7369, 8726]] = -1
 
-        print(self.chatbot.recommend(user_ratings=user_ratings, ratings_matrix=self.chatbot.ratings, k=5))
+        # print(self.chatbot.recommend(user_ratings=user_ratings, ratings_matrix=self.chatbot.ratings, k=5))
 
         self.llm_prompting = llm_prompting
         self.llm_history = [{

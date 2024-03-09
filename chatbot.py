@@ -185,17 +185,17 @@ class Chatbot:
             
             if np.count_nonzero(self.user_ratings) >= 5:
                 if self.affirmative_regex.search(line):
+                    self.recommendation_indices = self.recommend(self.user_ratings, self.ratings, 10)
                     response += self.new_recommendation()
                 elif self.negation_regex.search(line):
-                    response += self.no_more_recommendations()
+                    #response += self.no_more_recommendations()
+                    response += self.ask_another_movie()
             else:
                 response, successful = first_part_of_response()
 
             if successful:
                 if np.count_nonzero(self.user_ratings) >= 5:
-                    self.recommendation_indices = self.recommend(self.user_ratings, self.ratings, 10)
-
-                    response += " " + self.new_recommendation()
+                    response += " " + self.want_recommendation()
                 else:
                     response += " " + self.ask_another_movie()
 
@@ -259,6 +259,15 @@ class Chatbot:
             f"Noted, you liked \"{title}\".",
             f"Got it, \"{title}\" was a positive experience for you.",
             f"Understood, you had a favorable opinion of \"{title}\"."
+        ]
+        return random.choice(options)
+    
+    def want_recommendation(self):
+        options = [
+            "Would you like me to recommend a movie based on your preferences?",
+            "Shall I provide a movie recommendation for you based on the movies you've mentioned?",
+            "Are you interested in getting a movie recommendation from me?",
+            "Do you want me to suggest a movie that you might enjoy?"
         ]
         return random.choice(options)
     
