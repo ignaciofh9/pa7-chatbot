@@ -38,6 +38,9 @@ class Chatbot:
         self.user_ratings = np.zeros_like(ratings[:,0])
         self.recommendation_indices = []
 
+        self.affirmative_regex = re.compile(r"\b(yes|okay|sure|definitely|certainly|absolutely|positive|accept|approve|consent|yeah)\b", re.IGNORECASE)
+        self.negation_regex = re.compile(r"\b(no|never|deny|reject|refuse|decline|negative|nay|nope)\b", re.IGNORECASE)
+
         ########################################################################
         # TODO: Binarize the movie ratings matrix.                             #
         ########################################################################
@@ -181,18 +184,18 @@ class Chatbot:
             successful = False
             
             if np.count_nonzero(self.user_ratings) >= 5:
-                if "yes" in line.lower():
+                if self.affirmative_regex.search(line):
+                    self.recommendation_indices = self.recommend(self.user_ratings, self.ratings, 10)
                     response += self.new_recommendation()
-                elif "no" in line.lower():
-                    response += self.no_more_recommendations()
+                elif self.negation_regex.search(line):
+                    #response += self.no_more_recommendations()
+                    response += self.ask_another_movie()
             else:
                 response, successful = first_part_of_response()
 
             if successful:
                 if np.count_nonzero(self.user_ratings) >= 5:
-                    self.recommendation_indices = self.recommend(self.user_ratings, self.ratings, 10)
-
-                    response += " " + self.new_recommendation()
+                    response += " " + self.want_recommendation()
                 else:
                     response += " " + self.ask_another_movie()
 
@@ -219,9 +222,9 @@ class Chatbot:
 
     def not_found_in_db(self, title):
         options = [
-            f"I'm afraid I don't have any information about {title} in my database. Could you tell me about a different one you've seen?",
-            f"It seems like {title} isn't in my database. Please provide details on another movie you've watched.",
-            f"Unfortunately, I don't have access to {title}. Could you share your thoughts on a different movie instead?"
+            f"I'm afraid I don't have any information about \"{title}\" in my database. Could you tell me about a different one you've seen?",
+            f"It seems like \"{title}\" isn't in my database. Please provide details on another movie you've watched.",
+            f"Unfortunately, I don't have access to \"{title}\". Could you share your thoughts on a different movie instead?"
         ]
         return random.choice(options)
 
@@ -229,33 +232,42 @@ class Chatbot:
         matched_titles = [self.titles[i][0] for i in indices]
 
         options = [
-            f"I found multiple movies matching '{title}': {', '.join(matched_titles)}. Could you please also provide the release year to help me identify the specific movie?",
-            f"There are a few movies with the title '{title}' in my database: {', '.join(matched_titles)}. To narrow it down, can you also include the release year?",
-            f"It looks like there are a few movies called '{title}': {', '.join(matched_titles)}. Can you give me the title with the release year so I can find the right one?"
+            f"I found multiple movies matching \"{title}\": {', '.join(matched_titles)}. Could you please also provide the release year to help me identify the specific movie?",
+            f"There are a few movies with the title \"{title}\" in my database: {', '.join(matched_titles)}. To narrow it down, can you also include the release year?",
+            f"It looks like there are a few movies called \"{title}\": {', '.join(matched_titles)}. Can you give me the title with the release year so I can find the right one?"
         ]
         return random.choice(options)
         
     def negative_sentiment(self, title):
         options = [
-            f"Noted, you didn't like {title}.",
-            f"Got it, {title} was not a favorite of yours.",
-            f"Understood, you had a negative opinion of {title}."
+            f"Noted, you didn't like \"{title}\".",
+            f"Got it, \"{title}\" was not a favorite of yours.",
+            f"Understood, you had a negative opinion of \"{title}\"."
         ]
         return random.choice(options)
 
     def neutral_sentiment(self, title):
         options = [
-            f"I couldn't quite tell if you liked {title} or not. Could you clarify your thoughts on the movie?",
-            f"It's a bit unclear whether you enjoyed {title} or not. Could you provide some more details on your opinion?",
-            f"I'm afraid I didn't fully understand your sentiment towards {title}. Would you mind explaining your thoughts a bit more?"
+            f"I couldn't quite tell if you liked \"{title}\" or not. Could you clarify your thoughts on the movie?",
+            f"It's a bit unclear whether you enjoyed \"{title}\" or not. Could you provide some more details on your opinion?",
+            f"I'm afraid I didn't fully understand your sentiment towards \"{title}\". Would you mind explaining your thoughts a bit more?"
         ]
         return random.choice(options)
 
     def positive_sentiment(self, title):
         options = [
-            f"Noted, you liked {title}.",
-            f"Got it, {title} was a positive experience for you.",
-            f"Understood, you had a favorable opinion of {title}."
+            f"Noted, you liked \"{title}\".",
+            f"Got it, \"{title}\" was a positive experience for you.",
+            f"Understood, you had a favorable opinion of \"{title}\"."
+        ]
+        return random.choice(options)
+    
+    def want_recommendation(self):
+        options = [
+            "Would you like me to recommend a movie based on your preferences?",
+            "Shall I provide a movie recommendation for you based on the movies you've mentioned?",
+            "Are you interested in getting a movie recommendation from me?",
+            "Do you want me to suggest a movie that you might enjoy?"
         ]
         return random.choice(options)
     
@@ -273,9 +285,9 @@ class Chatbot:
             recommended_title = self.titles[self.recommendation_indices[0]][0]
             self.recommendation_indices = self.recommendation_indices[1:]
             options = [
-                f"Based on your preferences, I recommend you watch {recommended_title}. Would you like another recommendation?",
-                f"My next recommendation for you is {recommended_title}. Let me know if you'd like me to suggest another movie.",
-                f"You might enjoy {recommended_title} based on the movies you've mentioned. Shall I provide another recommendation?"
+                f"Based on your preferences, I recommend you watch \"{recommended_title}\". Would you like another recommendation?",
+                f"My next recommendation for you is \"{recommended_title}\". Let me know if you'd like me to suggest another movie.",
+                f"You might enjoy \"{recommended_title}\" based on the movies you've mentioned. Shall I provide another recommendation?"
             ]
 
         return random.choice(options)
