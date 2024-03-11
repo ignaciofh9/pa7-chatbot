@@ -98,7 +98,7 @@ class Chatbot:
         """Make sure to ask the user to tell you about another movie if there have been less than 5 movies mentioned so far."""
         """(2) Keep a count of the unique names of movies mentioned by the user. Once the user has mentioned 5 unique movies, ask if they would like a reccomendation and wait for their response before giving one. Only if the user would like one, reccomend a movie based on the movies (and sentiments towards each movie) mentioned thus far."""
         """(3) If the user mentions anything other than a movie, stay focused on movies and remember that your role is that of a moviebot assistant. Here is an example: """
-        """User: Can we talk about cars instead?"""+\
+        """User: Can we talk about cars instead?"""
         """Chatty Botter: As a moviebot assistant my job is to help you with only your movie related needs!  Anything film related that you'd like to discuss?"""
         """Make sure to only talk about movies for as long as you are talking to the user. Even after you have made a recommendation, you cannot at any point talk about anything that is not directly related to movies."""
 
@@ -387,6 +387,27 @@ Then, detect if the sentiment is positive or negative. Respond such that you are
         :returns: a list of emotions in the text or an empty list if no emotions found.
         Possible emotions are: "Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise"
         """
+        system_prompt = '''
+            You will be extracting EMOTION from the input and returning it in a list format such as ["Anger", "Disgust"]
+
+            Please note that the possible emotions are: "Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise". DO NOT OUTPUT ANY OTHER EMOTIONS
+
+            Here are some examples:
+
+            Input: "Your recommendations are making me so frustrated!"
+            Output: ["Anger"]
+
+            Input: "Wow! That was not a recommendation I expected!"
+            Output: ["Surprise"]
+
+            Input: "Ugh that movie was so gruesome! Stop making stupid recommendations!"
+            Output: ["Disgust", "Anger"]
+        '''
+
+        message = preprocessed_input
+        stop = ["\n"]
+        x = util.simple_llm_call(system_prompt, message, stop=stop)
+        print(x)
         return []
 
     def extract_titles(self, preprocessed_input):
