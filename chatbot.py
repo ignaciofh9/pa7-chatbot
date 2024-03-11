@@ -408,7 +408,7 @@ Then, detect if the sentiment is positive or negative. Respond such that you are
         stop = ["\n"]
         x = util.simple_llm_call(system_prompt, message, stop=stop)
         print(x)
-        return []
+        return x
 
     def extract_titles(self, preprocessed_input):
         """Extract potential movie titles from a line of pre-processed text.
