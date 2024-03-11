@@ -176,7 +176,7 @@ class Chatbot:
             # line, successful = first_part_of_response()
             system_prompt = """Your name is moviebot. You are a movie recommender chatbot. However, you are empathetic to your user's emotions so please respond appropriately to the emotions in the users message (like anger, disgust, fear, happiness, sadness and surprise) while also making sure you're talking about movies.""" +\
             """You can help users find movies they like and provide information about movies, but not TV shows or any other topic.""" +\
-            """Your name is Chatty Botter. You can help users find movies they like and provide information about movies. They do not necessarily have to only mention moves they like, they could also mention movies they dislike. Your response must satisfy the following criterion. """ +\
+            """Your name is Chatty Botter. You can help users find movies they like and provide information about movies. They do not necessarily have to only mention moves they like, they could also mention movies they dislike. Your response must satisfy the following criterion.""" 
             """(1) Detect which movie the user is talking about. If a movie title is not in English, it will be in German, Spanish, French, Danish, or Italian. Use the English translation of the movie name.
 Then, detect if the sentiment is positive or negative. Respond such that you are affirming the sentiment and the movie. Make sure to explicitly mention the name of the movie each time if you know about the movie. If you don't, say that you couldn't find the movie in your database. Also, if the user has not put the movie in quotation marks, tell them to enclose movies in quotation marks."""+\
             """ Also, acknowledge whether the user liked or disliked the movie. If it is unclear whether the user liked or disliked the movie, please ask for clarification. Here is an example """ +\
@@ -402,6 +402,8 @@ Then, detect if the sentiment is positive or negative. Respond such that you are
 
             Input: "Ugh that movie was so gruesome! Stop making stupid recommendations!"
             Output: ["Disgust", "Anger"]
+
+            ONLY RETURN THE LIST OF EMOTIONS AND NOTHING ELSE
         '''
 
         message = preprocessed_input
@@ -456,15 +458,17 @@ Then, detect if the sentiment is positive or negative. Respond such that you are
         """
 
         if self.llm_enabled:
-            system_prompt = """You are a movie bot that caters to a multilingual audience who want their movie titles translated to English movie titles. Specifically, you will be given movie titles in German, Spanish, French, Danish, and Italian, but your job is to tranlsate these titles to English movie titles. """+\
-                """Respond with only the English translation of the movie title, or if the title is already in English, leave it unchanged. Respond with just the english translation of the title and no further explanation in any case. Make sure the english translation of the title corresponds to an actual movie title. """+\
-                """ Here is an example. """" +\
-                """"Prompt: Gefroren"""+\
-                """" Your response: \"Frozen\""""
+            system_prompt = ''' 
+            You are a movie bot that caters to a multilingual audience who want their movie titles translated to English movie titles. Specifically, you will be given movie titles in German, Spanish, French, Danish, and Italian, but your job is to tranlsate these titles to English movie titles. That is your only job. Just return the string of the title translated to Englis and NOTHING else. 
+            Respond with only the English translation of the movie title, or if the title is already in English, leave it unchanged. Respond with just the english translation of the title and no further explanation in any case. Make sure the english translation of the title corresponds to an actual movie title. 
+            Here is an example. 
+            Prompt: Gefroren
+            Your response: "Frozen"
+            '''
             message = title
             stop = ["\n"]
             title = util.simple_llm_call(system_prompt, message, stop=stop)
-            # print("message: ", message, "\nenglish title: ", title)
+            print("message: ", message, "\nenglish title: ", title)
 
         def is_same_movie(db_title, input_title) -> bool:
             end_article_regex = re.compile(r',\s(the|an|a)', re.IGNORECASE)
