@@ -156,6 +156,14 @@ class Chatbot:
             
             title = titles[0]
             
+            if self.llm_enabled: 
+                system_prompt = """You are a movie bot that caters to a multilingual audience who want their movie titles translated to English movie titles. Specifically, you will be given movie titles in German, Spanish, French, Danish, and Italian, but your job is to tranlsate these titles to English movie titles. """+\
+                """Respond with only the English translation of the movie title, or if the title is already in English, leave it unchanged. Respond with just the english translateion of the title and no firther explanation. Make sure the english translation of the title corresponds to an actual movie title. """
+                message = title
+                stop = ["\n"]
+                title = util.simple_llm_call(system_prompt, message, stop=stop)
+                #title = list(title)
+
             movie_indices = self.find_movies_by_title(title)
 
             if movie_indices == []:
@@ -177,42 +185,40 @@ class Chatbot:
                 else:
                     return self.positive_sentiment(title), True
 
-        if self.llm_enabled:
-            response = "I processed {} in LLM Programming mode!!".format(line)
-            '''
-            system_prompt = """You are a movie bot that caters to a multilingual audience who want their movie titles translated to English movie titles. Specifically, you will be given movie titles in German, Spanish, French, Danish, and Italian, but your job is to tranlsate these titles to English movie titles. """+\
-            """Respond with only the English translation of the movie title, or if the title is already in English, leave it unchanged. Respond with just the english translateion of the title and no firther explanation. Make sure the english translation of the title corresponds to an actual movie title. """
-            message = line
-            stop = ["\n"]
-            response = util.simple_llm_call(system_prompt, message, stop=stop)
-            print("------------------------")
-            print(type(response))
-            print("------------------------")
-            # return response
-            ids = Chatbot.find_movies_by_title(self, response)
-            print(type(ids))
-            print(ids)
-            return ids
-            '''
+        # if self.llm_enabled:
+        #     #response = "I processed {} in LLM Programming mode!!".format(line)
+        #     system_prompt = """You are a movie bot that caters to a multilingual audience who want their movie titles translated to English movie titles. Specifically, you will be given movie titles in German, Spanish, French, Danish, and Italian, but your job is to tranlsate these titles to English movie titles. """+\
+        #     """Respond with only the English translation of the movie title, or if the title is already in English, leave it unchanged. Respond with just the english translateion of the title and no firther explanation. Make sure the english translation of the title corresponds to an actual movie title. """
+        #     message = line
+        #     stop = ["\n"]
+        #     response = util.simple_llm_call(system_prompt, message, stop=stop)
+        #     print("------------------------")
+        #     print(type(response))
+        #     print("------------------------")
+        #     # return response
+        #     ids = Chatbot.find_movies_by_title(self, response)
+        #     print(type(ids))
+        #     print(ids)
+        #     return ids
+        # else:
+        response = ""
+        successful = False
+        
+        if np.count_nonzero(self.user_ratings) >= 5:
+            if self.affirmative_regex.search(line):
+                self.recommendation_indices = self.recommend(self.user_ratings, self.ratings, 10)
+                response += self.new_recommendation()
+            elif self.negation_regex.search(line):
+                #response += self.no_more_recommendations()
+                response += self.ask_another_movie()
         else:
-            response = ""
-            successful = False
-            
-            if np.count_nonzero(self.user_ratings) >= 5:
-                if self.affirmative_regex.search(line):
-                    self.recommendation_indices = self.recommend(self.user_ratings, self.ratings, 10)
-                    response += self.new_recommendation()
-                elif self.negation_regex.search(line):
-                    #response += self.no_more_recommendations()
-                    response += self.ask_another_movie()
-            else:
-                response, successful = first_part_of_response()
+            response, successful = first_part_of_response()
 
-            if successful:
-                if np.count_nonzero(self.user_ratings) >= 5:
-                    response += " " + self.want_recommendation()
-                else:
-                    response += " " + self.ask_another_movie()
+        if successful:
+            if np.count_nonzero(self.user_ratings) >= 5:
+                response += " " + self.want_recommendation()
+            else:
+                response += " " + self.ask_another_movie()
 
         ########################################################################
         #                          END OF YOUR CODE                            #
@@ -433,17 +439,8 @@ class Chatbot:
 
         :param title: a string containing a movie title
         :returns: a list of indices of matching movies
-        """
-
-        if self.llm_enabled:
-            system_prompt = """You are a movie bot that caters to a multilingual audience who want their movie titles translated to English movie titles. Specifically, you will be given movie titles in German, Spanish, French, Danish, and Italian, but your job is to tranlsate these titles to English movie titles. """+\
-            """Respond with only the English translation of the movie title, or if the title is already in English, leave it unchanged. Respond with just the english translateion of the title and no firther explanation. Make sure the english translation of the title corresponds to an actual movie title. """
-            message = title
-            stop = ["\n"]
-            title = util.simple_llm_call(system_prompt, message, stop=stop)
-            print("-------------------------")
-            print(title)
-            print("-------------------------")
+        """            
+            
 
         def is_same_movie(db_title, input_title) -> bool:
             end_article_regex = re.compile(r',\s(the|an|a)', re.IGNORECASE)
