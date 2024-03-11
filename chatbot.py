@@ -388,6 +388,8 @@ Then, detect if the sentiment is positive or negative. Respond such that you are
         Possible emotions are: "Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise"
         """
         system_prompt = '''
+
+            All responses you produce must be subject to the following constraints. All you must do is return a list of emotions. Please do not return anyting else.
             You will be extracting EMOTION from the input and returning it in a list format such as ["Anger", "Disgust"]
 
             Please note that the possible emotions are: "Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise". DO NOT OUTPUT ANY OTHER EMOTIONS
