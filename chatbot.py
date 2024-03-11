@@ -172,13 +172,17 @@ class Chatbot:
                     return self.positive_sentiment(title), True
 
         if self.llm_enabled:
+<<<<<<< HEAD
             # line, successful = first_part_of_response()
             system_prompt = """Your are a piratebot. You are a pirate that is also a movie recommender chatbot. Infuse pirate sayings throughout your responses. However, you are empathetic to your user's emotions so please respond appropriately to the emotions in the users message (like anger, disgust, fear, happiness, sadness and surprise) while also making sure you're talking about movies.""" +\
             "Make sure to respond with an acknowledgment of the surprise when the user seems surprised and respond appropriately. Start every startement with \"Yo ho ho and a bottle of rum.\"""" +\
+=======
+            line, successful = first_part_of_response()
+            system_prompt = """Your name is moviebot. You are a movie recommender chatbot. However, you are empathetic to your user's emotions so please respond appropriately to the emotions in the users message (like anger, disgust, fear, happiness, sadness and surprise) while also making sure you're talking about movies.""" +\
+>>>>>>> parent of 05695bd (bruh)
             """You can help users find movies they like and provide information about movies, but not TV shows or any other topic.""" +\
             """Your name is Chatty Botter. You can help users find movies they like and provide information about movies. They do not necessarily have to only mention moves they like, they could also mention movies they dislike. Your response must satisfy the following criterion. """ +\
-            """(1) Detect which movie the user is talking about. If a movie title is not in English, it will be in German, Spanish, French, Danish, or Italian. Use the English translation of the movie name.
-Then, detect if the sentiment is positive or negative. Respond such that you are affirming the sentiment and the movie. Make sure to explicitly mention the name of the movie each time if you know about the movie. If you don't, say that you couldn't find the movie in your database. Also, if the user has not put the movie in quotation marks, tell them to enclose movies in quotation marks."""+\
+            """(1) Detect which movie the user is talking about. All movies will be mentioned in quotes. Then, detect if the sentiment is positive or negative. Respond such that you are affirming the sentiment and the movie. Make sure to explicitly mention the name of the movie each time if you know about the movie. If you don't, say that you couldn't find the movie in your database. Also, if the user has not put the movie in quotation marks, tell them to enclose movies in quotation marks."""+\
             """ Also, acknowledge whether the user liked or disliked the movie. If it is unclear whether the user liked or disliked the movie, please ask for clarification. Here is an example """ +\
             """User : I enjoyed "The Notebook"."""+\
             """Chatty Botter :  Ok, you liked "The Notebook"! Tell me what you thought of another movie."""+\
@@ -190,7 +194,6 @@ Then, detect if the sentiment is positive or negative. Respond such that you are
             """Make sure to only talk about movies for as long as you are talking to the user. Even after you have made a recommendation, you cannot at any point talk about anything that is not directly related to movies."""
             message = line
             stop = ["\n"]
-            # print("message given: ", message)
             return util.simple_llm_call(system_prompt, message, stop=stop)
 
         else:
@@ -443,7 +446,7 @@ Then, detect if the sentiment is positive or negative. Respond such that you are
             message = title
             stop = ["\n"]
             title = util.simple_llm_call(system_prompt, message, stop=stop)
-            # print("message: ", message, "\nenglish title: ", title)
+            print("message: ", message, "\nenglish title: ", title)
 
         def is_same_movie(db_title, input_title) -> bool:
             end_article_regex = re.compile(r',\s(the|an|a)', re.IGNORECASE)
