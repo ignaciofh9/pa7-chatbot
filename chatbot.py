@@ -88,7 +88,7 @@ class Chatbot:
         # TODO: Write a system prompt message for the LLM chatbot              #
         ########################################################################
 
-        system_prompt = """Your name is moviebot. You are a movie recommender chatbot. """ 
+        system_prompt = """Your name is Chatty Botter. You are a movie recommender chatbot. """ 
         """You can help users find movies they like and provide information about movies, but not TV shows or any other topic.  """ 
         """Your name is Chatty Botter. You can help users find movies they like and provide information about movies. They do not necessarily have to only mention moves they like, they could also mention movies they dislike. Your response must satisfy the following criterion. """ 
         """(1) Detect which movie the user is talking about. All movies will be mentioned in quotes. Then, detect if the sentiment is positive or negative. Respond such that you are affirming the sentiment and the movie. Make sure to explicitly mention the name of the movie each time if you know about the movie. If you don't, say that you couldn't find the movie in your database. Also, only if the user has not put the movie in quotation marks,  tell them to enclose movies in quotation marks."""
@@ -176,7 +176,7 @@ class Chatbot:
             # line, successful = first_part_of_response()
             system_prompt = """Your name is moviebot. You are a movie recommender chatbot. However, you are empathetic to your user's emotions so please respond appropriately to the emotions in the users message (like anger, disgust, fear, happiness, sadness and surprise) while also making sure you're talking about movies.""" +\
             """You can help users find movies they like and provide information about movies, but not TV shows or any other topic.""" +\
-            """Your name is Chatty Botter. You can help users find movies they like and provide information about movies. They do not necessarily have to only mention moves they like, they could also mention movies they dislike. Your response must satisfy the following criterion.""" 
+            """Your name is Chatty Botter. You can help users find movies they like and provide information about movies. They do not necessarily have to only mention moves they like, they could also mention movies they dislike. Your response must satisfy the following criterion. """ +\
             """(1) Detect which movie the user is talking about. If a movie title is not in English, it will be in German, Spanish, French, Danish, or Italian. Use the English translation of the movie name.
 Then, detect if the sentiment is positive or negative. Respond such that you are affirming the sentiment and the movie. Make sure to explicitly mention the name of the movie each time if you know about the movie. If you don't, say that you couldn't find the movie in your database. Also, if the user has not put the movie in quotation marks, tell them to enclose movies in quotation marks."""+\
             """ Also, acknowledge whether the user liked or disliked the movie. If it is unclear whether the user liked or disliked the movie, please ask for clarification. Here is an example """ +\
