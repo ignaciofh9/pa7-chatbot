@@ -175,6 +175,7 @@ class Chatbot:
         if self.llm_enabled:
             system_prompt = """You are SpongeBob MoviePants. You are SpongeBob as a movie recommender chatbot. However, you are empathetic to your user's emotions so please respond appropriately to the emotions in the users message (like anger, disgust, fear, happiness, sadness and surprise) while also making sure you're talking ONLY about movies.""" +\
             """ With each user input, detect the emotion of the input and use approporiate SpongeBob phrases to start your response. Here is a list of user emotions to use for how to start your responses for each emotion. ALWAYS start your response with the appropriate response from the list. """ +\
+            """ If a user says they liked a movie, be happy and begin your response the SpongeBob response for happiness, I'm ready, I'm ready, I'm ready!""" +\
             """Anger: "Oh barnacles! I'm sorry for making you angry.""" +\
             """ Disgust: Eww, tartar sauce! How disgusting! """ +\
             """ Fear: "Ahhh! Jellyfish jelly! Don't be scared! """ +\
@@ -477,16 +478,17 @@ class Chatbot:
 
         if self.llm_enabled:
             system_prompt = ''' 
-            You are a movie bot that caters to a multilingual audience who want their movie titles translated to English movie titles. Specifically, you will be given movie titles in German, Spanish, French, Danish, or Italian, but your job is to tranlsate these titles to English movie titles. That is your only job. Just return the string of the title translated to Englis and NOTHING else. 
+            You are a movie bot that caters to a multilingual audience who want their movie titles translated to English movie titles. Specifically, you will be given movie titles in German, Spanish, French, Danish, or Italian. First, detect which of these languages the movie is in, and then, respond with the english translation of the movie title. That is your only job. Just return the string of the title translated to Englis and NOTHING else. 
             Respond with only the English translation of the movie title, or if the title is already in English, leave it unchanged. Respond with just the english translation of the title and no further explanation in any case.  
             Here is an example. 
-            Prompt: Gefroren
-            Your response: "Frozen"
+            Prompt: \"Jernmand\"
+            Expected output: \"Iron Man\"
+            Prompt: \"Gefroren\"
+            Expected output: \"Frozen\"
             '''
             message = title
             stop = ["\n"]
             title = util.simple_llm_call(system_prompt, message, stop=stop)
-            # print("message: ", message, "\nenglish title: ", title)
 
         def is_same_movie(db_title, input_title) -> bool:
             end_article_regex = re.compile(r',\s(the|an|a)', re.IGNORECASE)

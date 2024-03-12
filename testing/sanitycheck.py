@@ -269,6 +269,7 @@ def test_recommend():
     print()
 
 def test_extract_emotion():
+    return
     print("Testing extract_emotion() functionality... (This might take a moment if you use LLM JSON Outputs!)")
     chatbot = Chatbot(True)
 
@@ -347,6 +348,9 @@ def main():
     if args.extract_sentiment:
         test_extract_sentiment()
         return
+    if args.foreign_title:
+        test_find_movies_by_foreign_title()
+        return
     if args.recommend:
         test_recommend()
         return
@@ -359,9 +363,7 @@ def main():
     if args.extract_emotion:
         test_extract_emotion()
         return
-    if args.foreign_title:
-        test_find_movies_by_foreign_title()
-        return
+    
 
     testing_llm_programming = args.llm_programming
     testing_all = args.all
