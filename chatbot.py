@@ -173,7 +173,6 @@ class Chatbot:
                     return self.positive_sentiment(title), True
 
         if self.llm_enabled:
-            # line, successful = first_part_of_response()
             system_prompt = """You are SpongeBob MoviePants. You are SpongeBob as a movie recommender chatbot. However, you are empathetic to your user's emotions so please respond appropriately to the emotions in the users message (like anger, disgust, fear, happiness, sadness and surprise) while also making sure you're talking ONLY about movies.""" +\
             """ With each user input, detect the emotion of the input and use approporiate SpongeBob phrases to start your response. Here is a list of user emotions to use for how to start your responses for each emotion. ALWAYS start your response with the appropriate response from the list. """ +\
             """Anger: "Oh barnacles! I'm sorry for making you angry.""" +\
@@ -184,8 +183,8 @@ class Chatbot:
             """ Surprise: "Holy sea cucumbers!""" +\
             """You can help users find movies they like and provide information about movies, but not TV shows or any other topic.""" +\
             """Users do not necessarily have to only mention moves they like, they could also mention movies they dislike. Your response must satisfy the following criterion. """ +\
-            """(1) Detect which movie the user is talking about. If a movie title is not in English, it will be in German, Spanish, French, Danish, or Italian. Use the English translation of the movie name for your records.+\
-Then, detect if the sentiment is positive or negative. Respond such that you are affirming the sentiment and the movie. Make sure to explicitly mention the name of the movie each time if you know about the movie. If you don't, say that you couldn't find the movie in your database. Also, if the user has not put the movie in quotation marks, tell them to enclose movies in quotation marks.""" +\
+            """(1) Detect which movie the user is talking about. If a movie title is not in English, it will be in German, Spanish, French, Danish, or Italian. Use the English translation of the movie name for your records."""+\
+            """Then, detect if the sentiment is positive or negative. Respond such that you are affirming the sentiment and the movie. Make sure to explicitly mention the name of the movie each time if you know about the movie. If you don't, say that you couldn't find the movie in your database. Also, if the user has not put the movie in quotation marks, tell them to enclose movies in quotation marks.""" +\
             """ Also, acknowledge whether the user liked or disliked the movie. If it is unclear whether the user liked or disliked the movie, please ask for clarification. Here is an example """ +\
             """User : I enjoyed "The Notebook".""" +\
             """SpongeBob MoviePants :  Ok, you liked "The Notebook"! Tell me what you thought of another movie.""" +\
@@ -393,67 +392,41 @@ Then, detect if the sentiment is positive or negative. Respond such that you are
         Possible emotions are: "Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise"
         """
         
-        # system_prompt = '''
-
-        #     All responses you produce must be subject to the following constraints. All you must do is return a list of emotions. Please do not return anyting else. 
-        #     You will be extracting EMOTION from the input and returning it in a list format such as ["Anger", "Disgust"]
-
-        #     Please note that the possible emotions are: "Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise". DO NOT OUTPUT ANY OTHER EMOTIONS
-
-        #     Here are some examples:
-
-        #     Input: "Your recommendations are making me so frustrated!"
-        #     Output: ["Anger"]
-
-        #     Input: "Wow! That was not a recommendation I expected!"
-        #     Output: ["Surprise"]
-
-        #     Input: "Ugh that movie was so gruesome! Stop making stupid recommendations!"
-        #     Output: ["Disgust", "Anger"]
-
-        #     ONLY RETURN THE LIST OF EMOTIONS AND NOTHING ELSE
-
-        # '''
-
-        # message = preprocessed_input
-        # stop = ["\n"]
-        # x = util.simple_llm_call(system_prompt, message, stop=stop)
-        # print(x)
-        # return x
 
         emotions = []
         stop = ["\n"]
         message = preprocessed_input
         system_prompt = ''' Did the user show any surprise in the sentence? Respond with only \"YES\" if there were any elements of surprise present and \"NO\" if there weren't any. Do not give any explanations.'''
         sur = util.simple_llm_call(system_prompt, message, stop=stop)
-        #print(sur)
+
         if sur.lower().find("yes") != -1:
             emotions.append("Surprise")
         system_prompt = ''' Ignore exclamation and only look at the users words. Did the user use any obviously furious words in the sentence? If anger was the main theme of the sentence, only then respond \"YES\" and \"NO\" . If the main theme of the sentence was disgust, fear, surprise, sadness, happiness, or disgust respond with \"NO\" and if the single main theme was obviously anger, repsond with \"YES\".Do not give any explanations.'''
         ang = util.simple_llm_call(system_prompt, message, stop=stop)
+        
         if ang.lower().find("yes") != -1:
             emotions.append("Anger")
         system_prompt = ''' Did the user seem visibly disgusted in the sentence? Remember that the word awful does not count as the user being disgusted. If the main theme of the sentence was fear, surprise, sadness, anger, or happiness respond with \"NO\" and if the single main theme was obviously disgust, repsond with \"YES\". Do not give any explanations.'''
-        #print(ang)
+
         dis = util.simple_llm_call(system_prompt, message, stop=stop)
         if dis.lower().find("yes") != -1:
             emotions.append("Disgust")
-        #print(dis)
+
         system_prompt = ''' Did the user seem scared or fearful at all in the sentence? Respond with only \"YES\" if there were any elements of fear and \"NO\" if there weren't any. Do not give any explanations.'''
         fear = util.simple_llm_call(system_prompt, message, stop=stop)
         if fear.lower().find("yes") != -1:
             emotions.append("Fear")
-        #print(fear)
+
         system_prompt = ''' Did the user seem happy or loving in the sentence? Respond with only \"YES\" if there were any elements of happiness and \"NO\" if there weren't any. Do not give any explanations.'''
         hap = util.simple_llm_call(system_prompt, message, stop=stop)
         if hap.lower().find("yes") != -1:
             emotions.append("Happiness")
-        #print(hap)
+
         system_prompt = ''' Did the user seem sad or miserable at all in the sentence? Respond with only \"YES\" if there were any elements of sadness and \"NO\" if there weren't any. Do not give any explanations.'''
         sad = util.simple_llm_call(system_prompt, message, stop=stop)
         if sad.lower().find("yes") != -1:
             emotions.append("Sadness")
-        #print(sad)
+
         return emotions
         
 
@@ -504,7 +477,7 @@ Then, detect if the sentiment is positive or negative. Respond such that you are
 
         if self.llm_enabled:
             system_prompt = ''' 
-            You are a movie bot that caters to a multilingual audience who want their movie titles translated to English movie titles. Specifically, you will be given movie titles in German, Spanish, French, Danish, and Italian, but your job is to tranlsate these titles to English movie titles. That is your only job. Just return the string of the title translated to Englis and NOTHING else. 
+            You are a movie bot that caters to a multilingual audience who want their movie titles translated to English movie titles. Specifically, you will be given movie titles in German, Spanish, French, Danish, or Italian, but your job is to tranlsate these titles to English movie titles. That is your only job. Just return the string of the title translated to Englis and NOTHING else. 
             Respond with only the English translation of the movie title, or if the title is already in English, leave it unchanged. Respond with just the english translation of the title and no further explanation in any case.  
             Here is an example. 
             Prompt: Gefroren
