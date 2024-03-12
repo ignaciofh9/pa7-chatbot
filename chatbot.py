@@ -392,32 +392,70 @@ Then, detect if the sentiment is positive or negative. Respond such that you are
         :returns: a list of emotions in the text or an empty list if no emotions found.
         Possible emotions are: "Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise"
         """
-        system_prompt = '''
+        
+        # system_prompt = '''
 
-            All responses you produce must be subject to the following constraints. All you must do is return a list of emotions. Please do not return anyting else.
-            You will be extracting EMOTION from the input and returning it in a list format such as ["Anger", "Disgust"]
+        #     All responses you produce must be subject to the following constraints. All you must do is return a list of emotions. Please do not return anyting else. 
+        #     You will be extracting EMOTION from the input and returning it in a list format such as ["Anger", "Disgust"]
 
-            Please note that the possible emotions are: "Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise". DO NOT OUTPUT ANY OTHER EMOTIONS
+        #     Please note that the possible emotions are: "Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise". DO NOT OUTPUT ANY OTHER EMOTIONS
 
-            Here are some examples:
+        #     Here are some examples:
 
-            Input: "Your recommendations are making me so frustrated!"
-            Output: ["Anger"]
+        #     Input: "Your recommendations are making me so frustrated!"
+        #     Output: ["Anger"]
 
-            Input: "Wow! That was not a recommendation I expected!"
-            Output: ["Surprise"]
+        #     Input: "Wow! That was not a recommendation I expected!"
+        #     Output: ["Surprise"]
 
-            Input: "Ugh that movie was so gruesome! Stop making stupid recommendations!"
-            Output: ["Disgust", "Anger"]
+        #     Input: "Ugh that movie was so gruesome! Stop making stupid recommendations!"
+        #     Output: ["Disgust", "Anger"]
 
-            ONLY RETURN THE LIST OF EMOTIONS AND NOTHING ELSE
-        '''
+        #     ONLY RETURN THE LIST OF EMOTIONS AND NOTHING ELSE
 
-        message = preprocessed_input
+        # '''
+
+        # message = preprocessed_input
+        # stop = ["\n"]
+        # x = util.simple_llm_call(system_prompt, message, stop=stop)
+        # print(x)
+        # return x
+
+        emotions = []
         stop = ["\n"]
-        x = util.simple_llm_call(system_prompt, message, stop=stop)
-        print(x)
-        return x
+        message = preprocessed_input
+        system_prompt = ''' Did the user show any surprise in the sentence? Respond with only \"YES\" if there were any elements of surprise present and \"NO\" if there weren't any. Do not give any explanations.'''
+        sur = util.simple_llm_call(system_prompt, message, stop=stop)
+        #print(sur)
+        if sur.lower().find("yes") != -1:
+            emotions.append("Surprise")
+        system_prompt = ''' Ignore exclamation and only look at the users words. Did the user use any obviously furious words in the sentence? If anger was the main theme of the sentence, only then respond \"YES\" and \"NO\" . If the main theme of the sentence was disgust, fear, surprise, sadness, happiness, or disgust respond with \"NO\" and if the single main theme was obviously anger, repsond with \"YES\".Do not give any explanations.'''
+        ang = util.simple_llm_call(system_prompt, message, stop=stop)
+        if ang.lower().find("yes") != -1:
+            emotions.append("Anger")
+        system_prompt = ''' Did the user seem visibly disgusted in the sentence? Remember that the word awful does not count as the user being disgusted. If the main theme of the sentence was fear, surprise, sadness, anger, or happiness respond with \"NO\" and if the single main theme was obviously disgust, repsond with \"YES\". Do not give any explanations.'''
+        #print(ang)
+        dis = util.simple_llm_call(system_prompt, message, stop=stop)
+        if dis.lower().find("yes") != -1:
+            emotions.append("Disgust")
+        #print(dis)
+        system_prompt = ''' Did the user seem scared or fearful at all in the sentence? Respond with only \"YES\" if there were any elements of fear and \"NO\" if there weren't any. Do not give any explanations.'''
+        fear = util.simple_llm_call(system_prompt, message, stop=stop)
+        if fear.lower().find("yes") != -1:
+            emotions.append("Fear")
+        #print(fear)
+        system_prompt = ''' Did the user seem happy or loving in the sentence? Respond with only \"YES\" if there were any elements of happiness and \"NO\" if there weren't any. Do not give any explanations.'''
+        hap = util.simple_llm_call(system_prompt, message, stop=stop)
+        if hap.lower().find("yes") != -1:
+            emotions.append("Happiness")
+        #print(hap)
+        system_prompt = ''' Did the user seem sad or miserable at all in the sentence? Respond with only \"YES\" if there were any elements of sadness and \"NO\" if there weren't any. Do not give any explanations.'''
+        sad = util.simple_llm_call(system_prompt, message, stop=stop)
+        if sad.lower().find("yes") != -1:
+            emotions.append("Sadness")
+        #print(sad)
+        return emotions
+        
 
     def extract_titles(self, preprocessed_input):
         """Extract potential movie titles from a line of pre-processed text.
